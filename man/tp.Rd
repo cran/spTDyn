@@ -1,0 +1,49 @@
+\name{tp}
+\alias{tp}
+\title{Defining dynamic time-series coefficients in the formula}
+\description{
+This function is used to define dynamic time-series coefficients within the formula for the Gaussian process spatio-dynamic and spatio-temporal DLM. 
+}
+\usage{
+tp(x)
+}
+\arguments{
+\item{x}{The variable/covariate for which time varying coefficient is defined.}
+}
+\seealso{
+\code{\link{GibbsDyn}, \link{sp}}
+}
+\examples{
+\dontrun{
+##
+
+###########################
+## Attach library spTimer
+###########################
+
+library(spTDyn)
+
+###########################
+## The GP models:
+###########################
+
+##
+## Model fitting
+##
+
+# Read data 
+data(DataFit); 
+
+# Define the coordinates
+coords<-as.matrix(unique(cbind(DataFit[,2:3])))
+
+# MCMC via Gibbs using default choices
+set.seed(11)
+post.gp <- GibbsDyn(formula=o8hrmax ~cMAXTMP+WDSP+tp(RH),   
+         data=DataFit, coords=coords, scale.transform="SQRT")
+print(post.gp)
+
+##
+}
+}
+\keyword{spT}

@@ -1,0 +1,56 @@
+citHeader("To cite spTDyn in publications use:")
+
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers <- paste("R package version", meta$Version)
+
+citEntry(entry = "Article",
+  title        = "A spatio-dynamic model for assessing frost risk in south-eastern Australia",
+  author    = personList(as.person("Khandoker Shuvo Bakar"),
+                         as.person("Philip Kokic"),
+                         as.person("Huidong Jin")),
+  journal      = "Journal of the Royal Statistical Society, Series C",
+  year         = "2015",
+  volume       = "",
+  number       = "",
+  pages        = "",
+  url          = "10.1111/rssc.12103",
+
+  textVersion  =
+  paste("Bakar, K.S., Kokic, P. and Jin, H. (2015).",
+        "A spatio-dynamic model for assessing frost risk in south-eastern Australia",
+        "Journal of the Royal Statistical Society, Series C",
+        "DOI: 10.1111/rssc.12103 .")
+)
+
+citEntry(entry = "Article",
+  title        = "Hierarchical spatially varying coefficient and temporal dynamic process models using {spTDyn}",
+  author    = personList(as.person("Khandoker Shuvo Bakar"),
+                         as.person("Philip Kokic"),
+                         as.person("Huidong Jin")),
+  journal      = "Journal of Statistical Computation and Simulation",
+  year         = "2015",
+  volume       = "",
+  number       = "",
+  pages        = "",
+  url          = "10.1080/00949655.2015.1038267",
+
+  textVersion  =
+  paste("Bakar, K.S., Kokic, P. and Jin, H. (2015).",
+        "Hierarchical spatially varying coefficient and temporal dynamic process models using spTDyn",
+        "Journal of Statistical Computation and Simulation",
+        "URL:  .")
+)
+
+citEntry(entry="Manual",
+  title = "Spatially varying and spatio-temporal dynamic linear models",
+  author    = personList(as.person("Khandoker Shuvo Bakar"),
+                         as.person("Philip Kokic"),
+                         as.person("Huidong Jin")),
+  year = year,
+  note = vers,
+     
+  textVersion =
+  paste("Khandoker Shuvo Bakar, Philip Kokic, Huidong Jin (",year,
+           "). Spatially varying and spatio-temporal dynamic linear models", vers, ".", sep="")
+)
+
