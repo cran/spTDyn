@@ -240,8 +240,8 @@ void zlt_fore_gp_sp(int *cov, int *K, int *nsite, int *n, int *r, int *p, int *q
      double *foreX, double *foreXsp, double *beta, double *betas, double *w, int *constant, 
      double *foreZ)
 { 
-     int t, l, k, i, j, T1, K1, r1, n1, ns, col;
-     T1 =*T;
+     int l, k, i, j, K1, r1, n1, ns, col;
+     //T1 =*T;
      K1 =*K;
      r1 =*r;
      n1 =*n;
@@ -283,7 +283,7 @@ void zlt_fore_gp_sp(int *cov, int *K, int *nsite, int *n, int *r, int *p, int *q
      
      for(l=0; l<r1; l++){
        for(k=0; k<1; k++){     
-         t = (T1-1);
+         //t = (T1-1);
          extract_alt2(l, k, nsite, rK, K, XB, XB1); // nsite x 1
          mvrnormal(constant, mu, sig_e, constant, eps); 
          for(i=0; i<ns; i++){

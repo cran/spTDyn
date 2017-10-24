@@ -1,11 +1,8 @@
 ####################################################################################
 
-
-library(coda, warn.conflicts = FALSE)
-library(sp, warn.conflicts = FALSE)
-#library(forecast, warn.conflicts = FALSE)
-#library(spacetime, warn.conflicts = FALSE)
-
+library(spTimer)
+library(coda)
+library(sp)
 
 .onLoad <-
     function(libname, pkgname)
@@ -22,7 +19,7 @@ library(sp, warn.conflicts = FALSE)
         version <- version[pmatch("Version",version)]
         um <- strsplit(version," ")[[1]]
         version <- um[nchar(um)>0][2]
-        packageStartupMessage("\n## spTDyn version: ", version," \n")
+        packageStartupMessage("## spTDyn version: ", version," \n")
 }
 
 

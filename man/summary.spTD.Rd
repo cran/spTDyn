@@ -1,19 +1,19 @@
-\name{summary.spT}
-\alias{summary.spT}
+\name{summary.spTD}
+\alias{summary.spTD}
 \title{Summary statistics of the parameters.}
 \description{
 This function is used to obtain MCMC summary statistics.
 }
 \usage{
-\method{summary}{spT}(object, digits=4, package="spTDyn", coefficient=NULL, ...)
+\method{summary}{spTD}(object, digits=4, package="spTDyn", coefficient=NULL, ...)
 
 ## 
 }
 \arguments{
-\item{object}{Object of class inheriting from "spT".}
+\item{object}{Object of class inheriting from "spTD".}
 \item{digits}{Rounds the specified number of decimal places (default 4).}
 \item{package}{If "coda" then summary statistics are given using coda package. Defaults value is "spTDyn".}
-\item{coefficient}{Only applicable if spatially and/or temporally varying modelling is used. Takes values: "spatial", "temporal" and "rho" for summary statistics of spatial, temporal and rho coefficients respectively. If NULL then provides parameter summary without spatial and temporal coefficients.}
+\item{coefficient}{Takes values: "spatial", "temporal" and "rho" for summary statistics of spatial, temporal and rho coefficients respectively. If NULL then provides parameter summary without spatial and temporal coefficients.}
 \item{...}{Other arguments.}
 }
 \value{

@@ -886,6 +886,7 @@ void sig_del_gp_tp(int *u, int *T, double *shape, double *prior_b, double *gam_0
                MProd(gam_0, constant, u, G, u, out); // u x 1
                for(i=0; i<u1; i++){
                    out[i] = gam[i+t*u1] - out[i];     
+                   //out[i] = 0.0;     
                }
             }
             else {

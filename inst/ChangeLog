@@ -1,0 +1,5 @@
+2017-10-15
+
+	* Version 2.0
+	* Added truncated/censored (only left-sided) Gaussian approach for spatially varying and temporal dynamic models with spatial and temporal predictions.
+

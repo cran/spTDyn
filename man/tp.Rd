@@ -14,7 +14,22 @@ tp(x)
 \code{\link{GibbsDyn}, \link{sp}}
 }
 \examples{
-\dontrun{
+\dontshow{
+##
+library(spTDyn)
+# Read data 
+data(NYdata); 
+# Define the coordinates
+coords<-as.matrix(unique(cbind(NYdata[,2:3])))
+# MCMC via Gibbs using default choices
+set.seed(11)
+post.gp <- GibbsDyn(formula=o8hrmax ~cMAXTMP+WDSP+tp(RH),   
+         nItr=100,nBurn=0, 
+         data=NYdata, coords=coords, scale.transform="SQRT")
+print(post.gp)
+##
+}
+\donttest{
 ##
 
 ###########################

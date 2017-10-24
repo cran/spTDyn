@@ -69,128 +69,7 @@ spT.priors<-function(model="GP",inv.var.prior=Gamm(a = 2,b = 1),
      }
      #
        priors.gp(prior_a, prior_b, prior_mubeta, prior_sigbeta,
-       prior_omu=NULL, prior_osig=NULL)
-     #
-   }
-   #
-   else if(model=="AR"){
-     #
-     if(is.na(inv.var.prior[,1])){
-       prior_a<-NULL
-     }
-     else{
-       prior_a<-inv.var.prior[,1]
-     }
-     if(is.na(inv.var.prior[,2])){
-       prior_b<-NULL
-     }
-     else{
-       prior_b<-inv.var.prior[,2]
-     }
-     if(is.na(beta.prior[,1])){
-       prior_mubeta<-NULL
-     }
-     else{
-       prior_mubeta<-beta.prior[,1]
-     }
-     if(is.na(beta.prior[,2])){
-       prior_sigbeta<-NULL
-     }
-     else{
-       prior_sigbeta<-beta.prior[,2]
-     }
-     if(is.na(rho.prior[,1])){
-       prior_murho<-NULL
-     }
-     else{
-       prior_murho<-rho.prior[,1]
-     }
-     if(is.na(rho.prior[,2])){
-       prior_sigrho<-NULL
-     }
-     else{
-       prior_sigrho<-rho.prior[,2]
-     }
-     ##
-     ## Priors for the AR models
-     ##
-      priors.ar<-function(prior_a=NULL,prior_b=NULL,prior_sig=NULL)
-     {
-      out <- NULL
-      out$prior_a <- prior_a
-      out$prior_b <- prior_b
-      out$prior_sig <- prior_sig
-      class(out) <- "spAR"
-      out
-     }
-     #
-       priors.ar(prior_a,prior_b,prior_sigbeta)
-     #
-   }
-   #
-   else if(model=="GPP"){
-     #
-     if(is.na(inv.var.prior[,1])){
-       prior_a<-NULL
-     }
-     else{
-       prior_a<-inv.var.prior[,1]
-     }
-     if(is.na(inv.var.prior[,2])){
-       prior_b<-NULL
-     }
-     else{
-       prior_b<-inv.var.prior[,2]
-     }
-     if(is.na(beta.prior[,1])){
-       prior_mubeta<-NULL
-     }
-     else{
-       prior_mubeta<-beta.prior[,1]
-     }
-     if(is.na(beta.prior[,2])){
-       prior_sigbeta<-NULL
-     }
-     else{
-       prior_sigbeta<-beta.prior[,2]
-     }
-     if(is.na(rho.prior[,1])){
-       prior_murho<-NULL
-     }
-     else{
-       prior_murho<-rho.prior[,1]
-     }
-     if(is.na(rho.prior[,2])){
-       prior_sigrho<-NULL
-     }
-     else{
-       prior_sigrho<-rho.prior[,2]
-     }
-     ##
-     ## Priors for the GPP models
-     ##
-     priors.gpp<-function(prior_a=NULL,prior_b=NULL,
-          mu_beta=NULL,delta2_beta=NULL,
-          mu_rho=NULL,delta2_rho=NULL,
-          alpha_l=NULL,delta2_l=NULL)
-     {
-        out <- NULL
-        out$prior_a <- prior_a
-        out$prior_b <- prior_b
-        out$mu_beta <- mu_beta
-        out$delta2_beta <- matrix(0,length(delta2_beta),length(delta2_beta))
-        diag(out$delta2_beta)<-delta2_beta
-        out$mu_rho <- mu_rho
-        out$delta2_rho <- delta2_rho
-        out$alpha_l <- alpha_l
-        out$delta2_l <- delta2_l
-        class(out) <- "spGPP"
-        out
-     }
-     #
-       priors.gpp(prior_a,prior_b,mu_beta=prior_mubeta,
-       delta2_beta=prior_sigbeta,mu_rho=prior_murho,
-       delta2_rho=prior_sigrho,alpha_l=NULL,delta2_l=NULL)
+       prior_omu=0, prior_osig=prior_sigbeta)
      #
    }
    #
@@ -206,7 +85,6 @@ initials<-function(sig2eps=0.01, sig2eta=NULL,
             sig2beta=NULL, sig2delta=NULL, rhotp=NULL, 
             rho=NULL, beta=NULL, phi=NULL)
 {			
-
     out<-spT.initials(model="GP", sig2eps=sig2eps, sig2eta=sig2eta, 
             sig2beta=sig2beta, sig2delta=sig2delta, rhotp=rhotp, 
             rho=rho, beta=beta, phi=phi)
@@ -234,18 +112,8 @@ spT.initials<-function(model="GP", sig2eps=0.01, sig2eta=NULL,
    #
       initials.gp(phi,sig2eps,sig2eta,sig2beta,sig2delta,rhotp,beta)
   }
-   #
-   else if(model=="AR"){
-   ##
-        stop("\n Error: correctly define model \n")
-   }
-   #
-   else if(model=="GPP"){
-   ##
-        stop("\n Error: correctly define model \n")
-   }
-   #
-   else {
+  #
+  else {
         stop("\n Error: correctly define model \n")
    }
    #
@@ -322,12 +190,14 @@ decay<-function(distribution=Gamm(a=2,b=1), tuning=NULL, npoints=NULL, value=NUL
 ##
 ## Gibbs function for spTimerDyn
 ##
-GibbsDyn<-function(formula, data=parent.frame(), 
+GibbsDyn<-function(formula, data=parent.frame(),
+         model="GP", # can take GP and "truncated" 
          time.data=NULL, coords, priors=NULL, initials=NULL, 
 		 nItr=5000, nBurn=1000, report=1, 
          tol.dist=0.05, distance.method="geodetic:km", 
          cov.fnc="exponential", scale.transform="NONE", 
-         spatial.decay=decay(distribution="FIXED"))
+         spatial.decay=decay(distribution="FIXED"),
+		 truncation.para=list(at=0,lambda=2))
 {
    ## check for spacetime class
    if(class(data) %in% c("STFDF","STSDF","STIDF","SpatialPointsDataFrame")){
@@ -372,27 +242,29 @@ GibbsDyn<-function(formula, data=parent.frame(),
 		 stop("\n Error: coords should be provide, see manual. \n")
         }
 	}
-   ##
-    out<-spT.Gibbs(formula=formula, data=data, model="GP",
+    ##
+    out<-spTDyn.Gibbs(formula=formula, data=data, model=model,
          time.data=time.data, coords=coords, 
          priors=priors, initials=initials, nItr=nItr, nBurn=nBurn, report=report, 
          tol.dist=tol.dist, distance.method=distance.method, 
          cov.fnc=cov.fnc, scale.transform=scale.transform, 
-         spatial.decay=spatial.decay,annual.aggrn="NONE")
+         spatial.decay=spatial.decay,truncation.para=truncation.para,
+		 annual.aggrn="NONE")
 	##
+	class(out) <- "spTD"
 	out
     ##	
 }		 
 ##
 ## Gibbs function for spTimer
 ##
-spT.Gibbs<-function(formula, data=parent.frame(), model="GP",
+spTDyn.Gibbs<-function(formula, data=parent.frame(), model="GP",
          time.data=NULL, coords, knots.coords, 
          newcoords=NULL, newdata=NULL, 
          priors=NULL, initials=NULL, nItr=5000, nBurn=1000, report=1, 
          tol.dist=0.05, distance.method="geodetic:km", 
          cov.fnc="exponential", scale.transform="NONE", 
-         spatial.decay=spT.decay(distribution="FIXED"),
+         spatial.decay=spatial.decay, truncation.para=truncation.para,
          annual.aggrn="NONE")
 {
    ## check for spacetime class
@@ -467,7 +339,7 @@ spT.Gibbs<-function(formula, data=parent.frame(), model="GP",
     stop("\n# Error: correctly define spatial.decay \n")
    }
    #
-   if(!model %in% c("GP", "AR", "GPP")){
+   if(!model %in% c("GP","truncated")){
     stop("\n# Error: correctly define model \n")
    }
    #
@@ -478,10 +350,10 @@ spT.Gibbs<-function(formula, data=parent.frame(), model="GP",
    if(model=="GP"){
       cat("\n Output: GP models \n")
       if(class(priors) != "spGP" & class(priors) != "NULL"){
-        stop("\n# Error: correctly define the GP models for function spT.priors.")
+        stop("\n# Error: correctly define the GP models for function priors.")
       }
       if(class(initials) != "spGP" & class(initials) != "NULL"){
-        stop("\n# Error: correctly define the GP models for function spT.initials.")
+        stop("\n# Error: correctly define the GP models for function initials.")
       }
       out<- spGP.Gibbs(formula=formula, data=data, time.data=time.data, coords=coords, 
             priors=priors, initials=initials, nItr=nItr, nBurn=nBurn, report=report, tol.dist=tol.dist,   
@@ -491,6 +363,31 @@ spT.Gibbs<-function(formula, data=parent.frame(), model="GP",
       out$model<-model
       out$parameter<-stat.sum(out, cov.fnc=cov.fnc)
       out$data<-data
+      class(out)<-"spT"
+      out
+   }
+   #
+   else if (model=="truncated"){
+      cat("\n Output: Truncated model \n")
+      if(class(priors) != "spGP" & class(priors) != "NULL"){
+        stop("\n# Error: correctly define the models for priors.")
+      }
+      if(class(initials) != "spGP" & class(initials) != "NULL"){
+        stop("\n# Error: correctly define the models for function initials.")
+      }
+	  if(!is.list(truncation.para)){
+        stop("\n# Error: truncation parameter should be a list. \n")
+	  }
+      out <- sptruncated.Gibbs(formula=formula, data=data, time.data=time.data, coords=coords,
+           priors=priors, initials=initials, nItr=nItr, nBurn=nBurn, report=report, 
+           tol.dist=tol.dist, distance.method=distance.method, cov.fnc=cov.fnc,
+           scale.transform=scale.transform, spatial.decay=spatial.decay, 
+		   truncation.para=truncation.para, X.out=TRUE, Y.out=TRUE)
+      out$combined.fit.pred<-FALSE
+      out$model<-model
+      out$parameter<-stat.sum(out, cov.fnc=cov.fnc)
+      out$data<-data
+	  out$truncation.para <- truncation.para
       class(out)<-"spT"
       out
    }
@@ -528,23 +425,12 @@ spT.prediction<-function(nBurn=0, pred.data=NULL, pred.coords,
     stop("\n#\n# Termination: Prediction results are already obtained with the fitted models \n#\n")
    }
    #
-   model<-posteriors$model
-   #
-   if(!model %in% c("GP", "AR", "GPP")){
-    stop("\n# Error: model is not correctly defined \n")
-   }
-   #
-   else if(model=="GP"){
       cat("\n Prediction: GP models \n")
       out<-spGP.prediction(nBurn=nBurn, pred.data=pred.data, pred.coords=pred.coords, 
            posteriors=posteriors, tol.dist=tol.dist, Summary=Summary)
-      out$model<-model
-      #class(out)<-"spTprd"
+      out$model<-posteriors$model
       out
-   }
-   else {
-    stop("\n# Error: model is not correctly defined \n")
-   }
+   #
 }
 ##
 ## Forecast function for spTimer
@@ -566,34 +452,21 @@ spT.forecast<-function(nBurn=0, K=1, fore.data=NULL, fore.coords,
        stop("Error: need to provide the posterior MCMC samples.")
    }
    #
-   model<-posteriors$model
-   #
-   if(!model %in% c("GP", "AR", "GPP")){
-    stop("\n# Error: model is not correctly defined \n")
-   }
-   #
-   else if(model=="GP"){
       cat("\n Forecast: GP models \n")
       out<-spGP.forecast(nBurn=nBurn, K=K, fore.data=fore.data,
            fore.coords=fore.coords, posteriors=posteriors, 
            tol.dist=tol.dist, Summary=Summary)
-      out$model<-model
-      class(out)<-"spTfore"
+      out$model<-posteriors$model
       out
-   }
    #
-   else {
-    stop("\n# Error: model is not correctly defined \n")
-   }
 }
 ##
 ## use of predict function
 ##
-predict.spT<-function(object, newdata=NULL, newcoords, foreStep=NULL, type="spatial", nBurn=0, 
+predict.spTD<-function(object, newdata=NULL, newcoords, foreStep=NULL, type="spatial", nBurn=0, 
           tol.dist=2, Summary=TRUE, ...)
 {
    ## check for spacetime class
-   predAR=NULL 
    if(class(newdata) %in% c("STFDF","STSDF","STIDF","SpatialPointsDataFrame")){
 	newcoords <- as.matrix(unique((as.data.frame(newdata[,0]))))
 	dimnames(newcoords) <- NULL
@@ -653,7 +526,7 @@ predict.spT<-function(object, newdata=NULL, newcoords, foreStep=NULL, type="spat
           stop("Error: define foreStep.")
         }
      out<-spT.forecast(nBurn=nBurn, K=foreStep, fore.data=newdata, fore.coords=newcoords, 
-            posteriors=object, pred.samples.ar=predAR, tol.dist=tol.dist, Summary=Summary)
+            posteriors=object, pred.samples.ar=NULL, tol.dist=tol.dist, Summary=Summary)
      out$type<-"temporal"
      class(out)<-"spTpred"
      out
@@ -686,7 +559,7 @@ print.spTpred<-function(x, ...) {
 ##
 ## this code is used in spT.Gibbs
 ##
-   stat.sum<-function(x, cov.fnc)
+stat.sum<-function(x, cov.fnc)
    {
      model<-x$model
      nItr<-x$iterations-x$nBurn
@@ -696,7 +569,7 @@ print.spTpred<-function(x, ...) {
      if(is.null(model)==TRUE){
       stop("\n# Error: need to define the model")
      }
-     else if(model == "GP"){
+     else if(model == "GP" | model == "truncated"){
         if(nItr <= nBurn){
            stop("\n# Error: iteration (",nItr,") is less than or equal to nBurn (",nBurn,") \n")
         }

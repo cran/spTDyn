@@ -15,13 +15,13 @@ def.time(t.series, segments=1)
 \code{\link{GibbsDyn}}.
 }
 \examples{
-\dontrun{
+%\dontrun{
 ## 
 
 # regular time-series in each year
 time.data<-def.time(t.series=30,segments=2)
 
 ##
-}
+%}
 }
 \keyword{spT}

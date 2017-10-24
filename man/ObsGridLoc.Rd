@@ -21,7 +21,7 @@ ObsGridData(obsData, gridData, obsLoc, gridLoc, distance.method="geodetic:km")
 \item{obsData}{Observation data in data frame.}
 }
 \examples{
-\dontrun{
+%\dontrun{
 ##
 
 library(spTimer)
@@ -42,8 +42,6 @@ head(dat)
 gridData<-array(1:(10*10*31*2),dim=c(10,10,31,2)) # lon, lat, day, year
 dat<-gridTodata(gridData, gridLoc)
 head(dat)
-dat<-gridTodata(gridData, gridLon=gridLoc[,1], gridLat=gridLoc[,2])
-head(dat)
 
 # combine observed and grid data and locations
 obsData<-NYdata
@@ -62,5 +60,6 @@ dat<-ObsGridData(obsData, gridData=list(gridData1,gridData2),
 head(dat)
 
 ##
-}}
+%}
+}
 \keyword{utility}

@@ -25,13 +25,13 @@ Initial values are automatically given if the user does not provide these.
 \code{\link{GibbsDyn}, \link{priors}}.
 }
 \examples{
-\dontrun{
+%\dontrun{
 ## 
 
 initials<-initials(sig2eps=0.01, sig2eta=0.5, beta=NULL, phi=0.001)
 initials
 
 ##
-}
+%}
 }
 \keyword{spTDyn}

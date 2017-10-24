@@ -14,7 +14,7 @@
 \alias{initials.checking.ar}
 \alias{initials.checking.gp}
 \alias{initials.checking.gpp}
-\alias{print.spT}
+\alias{print.spTD}
 \alias{print.spTpred}
 \alias{print.spTprd}
 \alias{print.spTfore}
@@ -44,11 +44,11 @@
 \alias{spT.Summary.Stat}
 \alias{spT.MCMC.plot}
 \alias{spT.MCMC.stat}
-\alias{as.mcmc.spT}
+\alias{as.mcmc.spTD}
 \alias{MCMC.plot.obj}
-\alias{coef.spT}
+\alias{coef.spTD}
 \alias{model.frame.spT}
-\alias{residuals.spT}
+\alias{residuals.spTD}
 \alias{formula.spT}
 \alias{terms.spT}
 \alias{model.matrix.spT}
@@ -62,8 +62,8 @@
 \alias{spT.geodist}
 \alias{spT.pCOVER}
 \alias{spT.validation}
-\alias{confint.spT}
-\alias{fitted.spT}
+\alias{confint.spTD}
+\alias{fitted.spTD}
 \alias{spT.check.sites.inside}
 \alias{spT.geo.dist}
 \alias{spT.geo_dist}
@@ -71,10 +71,10 @@
 \alias{as.forecast.object}
 \alias{NYdata}
 \alias{AUSdata}
+\alias{truncated.fnc}
+\alias{reverse.truncated.fnc}
+\alias{prob.below.threshold}
 %\alias{NYgrid}
 %\alias{imputation.z}
-%\alias{summary.spT}
-%\alias{plot.spT}
 \description{Internal spTDyn functions}
 \keyword{internal}
-

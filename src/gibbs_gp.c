@@ -9,6 +9,7 @@
 #include "Print.h"
 
 
+/*
   
 // The programme for GIBBS SAMPLING with XB and missing values
 // with all summary values (mean, variance/sd, low2.5, up97.5)
@@ -306,7 +307,7 @@ void GIBBS_sumpred_txt_gp(int *aggtype, double *flag, int *its, int *burnin,
      return;
 }
 
-
+*/
 
 
 // The programme for GIBBS SAMPLING with XB and missing values

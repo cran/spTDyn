@@ -20,13 +20,13 @@ If no prior information are given (assigned as NULL), then it use flat prior val
 \code{\link{GibbsDyn}, \link{initials}}.
 }
 \examples{
-\dontrun{
+%\dontrun{
 ## 
-
-priors<-priors(var.prior=Gam(2,1), beta.prior=Nor(0,10^4))
+library(spTimer)
+priors<-priors(inv.var.prior=Gamm(2,1), beta.prior=Norm(0,10^4))
 priors
 
 ##
-}
+%}
 }
 \keyword{spTDyn}

@@ -5,14 +5,15 @@
 This function is used to draw MCMC samples using the Gibbs sampler. 
 }
 \usage{
-GibbsDyn(formula, data=parent.frame(), time.data=NULL, coords, 
+GibbsDyn(formula, data=parent.frame(), model="GP", time.data=NULL, coords, 
 	priors=NULL, initials=NULL, nItr=5000, nBurn=1000, report=1, tol.dist=0.05, 
 	distance.method="geodetic:km", cov.fnc="exponential", scale.transform="NONE", 
-	spatial.decay=decay(distribution="FIXED"))
+	spatial.decay=decay(distribution="FIXED"),truncation.para=list(at=0,lambda=2))
 }
 \arguments{
 \item{formula}{The symnbolic description of the model equation of the regression part of the space-time model. The terms \link{sp} and \link{tp} are used to define spatially and temporally varying parameters for the model.} 
 \item{data}{An optional data frame containing the variables in the model. If omitted, the variables are taken from environment(formula), typically the environment from which spT.Gibbs is called. The data should be ordered first by the time and then by the sites specified by the \code{coords} below. One can also supply coordinates through this argument, where coordinate names should be "Latitude" and "Longitude".}
+\item{model}{The spatio-temporal models to be fitted, current choices are: "GP", and "truncated", with the first one as the default.}
 \item{time.data}{Defining the segments of the time-series set up using the function \code{\link{def.time}}.}
 \item{coords}{The n by 2 matrix or data frame defining the locations (e.g., longitude/easting, latitude/northing) of the fitting sites, where n is the number of fitting sites. One can also supply coordinates through a formula argument such as ~Longitude+Latitude.}
 \item{priors}{The prior distributions for the parameters. Default distributions are specified if these are not provided. If priors=NULL a flat prior distribution will be used with large variance. See details in \code{\link{priors}}.}
@@ -25,6 +26,7 @@ GibbsDyn(formula, data=parent.frame(), time.data=NULL, coords,
 \item{cov.fnc}{Covariance function for the spatial effects. The available options  are "exponential", "gaussian", "spherical" and "matern". If "matern" is used then by default the smooth parameter (\eqn{\nu}) is estimated from (0,1) uniform distribution using discrete samples.}
 \item{scale.transform}{The transformation method for the response variable. Currently implemented options are: "NONE", "SQRT", and "LOG" with  "NONE" as the deault.}
 \item{spatial.decay}{Provides the prior distribution for the spatial decay parameter \eqn{\phi}. Currently implemented options  are  "FIXED", "Unif", or "Gamm".  Further details for each of these are specified by \code{\link{decay}}.}
+\item{truncation.para}{Provides truncation parameter \eqn{\lambda} and truncation point "at" using list.}
 }
 \value{
 \item{accept}{The acceptance rate for the \eqn{\phi} parameter if the "MH" method of sampling is chosen.}
@@ -33,8 +35,8 @@ GibbsDyn(formula, data=parent.frame(), time.data=NULL, coords,
 \item{sig2eps}{MCMC samples for the parameter \eqn{\sigma^2_\epsilon}.}
 \item{sig2etap}{MCMC samples for the parameter \eqn{\sigma^2_\eta}.}
 \item{sig2betap}{MCMC samples for the parameter \eqn{\sigma^2_\beta}, only applicable for spatially varying coefficient process model.}
-\item{sig2deltap}{MCMC samples for the parameter \eqn{\sigma^2_\delta}, only applicable for spatio-temporal DLM.}
-\item{sig2op}{MCMC samples for the parameter \eqn{\sigma^2_o}, only applicable for spatio-dynamic and spatio-temporal DLM.}
+\item{sig2deltap}{MCMC samples for the parameter \eqn{\sigma^2_\delta}, for  \eqn{\beta_j}, \eqn{j=1,...,u}. Only applicable for spatio-temporal DLM.}
+\item{sig2op}{MCMC samples for the parameter \eqn{\sigma^2_o}, for  initial variance of \eqn{\beta_0}. Only applicable for spatio-dynamic and spatio-temporal DLM.}
 \item{betap}{MCMC samples for the parameter \eqn{\beta}.}
 \item{rhop}{MCMC samples for \eqn{\rho}.}
 \item{op}{MCMC samples for the true observations.}
@@ -69,7 +71,69 @@ GibbsDyn(formula, data=parent.frame(), time.data=NULL, coords,
 \code{\link{priors}, \link{initials}, \link{dist}, \link{sp}, \link{tp}}.
 }
 \examples{
-\dontrun{
+\dontshow{
+##
+## Read Aus data ##
+data(AUSdata)
+# set a side data for validation
+library(spTimer)
+s<-c(1,4,10)
+AUSdataFit<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s, reverse=TRUE)
+AUSdataFit<-subset(AUSdataFit, with(AUSdataFit, !(year == 2009)))
+AUSdataPred<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s)
+AUSdataPred<-subset(AUSdataPred, with(AUSdataPred, !(year == 2009)))
+AUSdataFore<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s)
+AUSdataFore<-subset(AUSdataFore, with(AUSdataFore, (year == 2009)))
+
+## Read NY data ##
+data(NYdata)
+# set a side data for validation
+s<-c(5,8,10,15,20,22,24,26)
+fday<-c(25:31)
+NYdataFit<-spT.subset(data=NYdata, var.name=c("s.index"), s=s, reverse=TRUE)
+NYdataFit<-subset(NYdataFit, with(NYdataFit, !(Day \%in\% fday & Month == 8)))
+NYdataPred<-spT.subset(data=NYdata, var.name=c("s.index"), s=s)
+NYdataPred<-subset(NYdataPred, with(NYdataPred, !(Day \%in\% fday & Month == 8)))
+NYdataFore<-spT.subset(data=NYdata, var.name=c("s.index"), s=s)
+NYdataFore<-subset(NYdataFore, with(NYdataFore, (Day \%in\% fday & Month == 8)))
+
+nItr<-100
+nBurn<-0
+
+# MCMC via Gibbs using defaults
+# Spatially varying coefficient process model
+
+set.seed(11)
+post.sp <- GibbsDyn(tmax ~ soi+sp(soi)+grid+sp(grid),
+           data=AUSdataFit, nItr=nItr, nBurn=nBurn, coords=~lon+lat,
+           spatial.decay=decay(distribution=Gamm(2,1),tuning=0.06))
+## spatial prediction
+set.seed(11)
+pred.sp <- predict(post.sp,newcoords=~lon+lat,newdata=AUSdataPred)
+## temporal prediction
+set.seed(11)
+pred.sp.f <- predict(post.sp,type="temporal",foreStep=12,
+                     newcoords=~lon+lat, newdata=AUSdataFore)
+
+# MCMC via Gibbs using defaults
+# spatio-temporal DLM
+
+set.seed(11)
+post.tp <- GibbsDyn(o8hrmax ~ tp(cMAXTMP)-1, data=NYdataFit,
+           nItr=nItr, nBurn=nBurn, coords=~Longitude+Latitude,
+           initials=initials(rhotp=0), scale.transform="SQRT",
+           spatial.decay=decay(distribution=Gamm(2,1),tuning=0.05))
+## spatial prediction
+set.seed(11)
+pred.tp <- predict(post.tp, newdata=NYdataPred, newcoords=~Longitude+Latitude)
+## temporal prediction
+set.seed(11)
+pred.tp.f <- predict(post.tp, newdata=NYdataFore, newcoords=~Longitude+Latitude,
+                     type="temporal", foreStep=7)
+##
+
+}
+\donttest{
 ##
 
 ###########################
@@ -81,6 +145,7 @@ library(spTDyn)
 ## Read Aus data ##
 data(AUSdata)
 # set a side data for validation
+library(spTimer)
 s<-c(1,4,10)
 AUSdataFit<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s, reverse=TRUE)
 AUSdataFit<-subset(AUSdataFit, with(AUSdataFit, !(year == 2009)))
@@ -203,6 +268,90 @@ pred.tp.f <- predict(post.tp, newdata=NYdataFore, newcoords=~Longitude+Latitude,
 
 ## Table 6, Section: 4.2, validation ##
 spT.validation(NYdataFore$o8hrmax,c(pred.tp.f$Mean))
+
+######################################################
+## The Truncated/Censored models:
+######################################################
+
+## Read Aus data ##
+data(AUSdata)
+# set the truncation point at tmax=30
+AUSdata$tmax <- replace(AUSdata$tmax, AUSdata$tmax<=30, 30)
+
+# set a side data for validation
+library(spTimer)
+s<-c(1,4,10)
+AUSdataFit<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s, reverse=TRUE)
+AUSdataFit<-subset(AUSdataFit, with(AUSdataFit, !(year == 2009)))
+AUSdataPred<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s)
+AUSdataPred<-subset(AUSdataPred, with(AUSdataPred, !(year == 2009)))
+AUSdataFore<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s)
+AUSdataFore<-subset(AUSdataFore, with(AUSdataFore, (year == 2009)))
+
+#
+nItr <- 5000 # number of MCMC samples for each model
+nBurn <- 1000 # number of burn-in from the MCMC samples
+# Truncation at 30 
+# fit truncated spatially varying model 
+
+## The Truncated/Censored spatially varying models:
+library("spTDyn", warn.conflicts = FALSE)
+set.seed(11)
+out <- GibbsDyn(tmax ~ soi+sp(soi)+grid+sp(grid),model="truncated",
+           data=AUSdataFit, nItr=nItr, nBurn=nBurn, coords=~lon+lat,
+           spatial.decay=decay(distribution=Gamm(2,1),tuning=0.06),
+           truncation.para = list(at = 30,lambda = 2))
+print(out)
+summary(out)
+head(fitted(out))
+plot(out,density=FALSE)
+#
+head(cbind(AUSdataFit$tmax,fitted(out)[,1]))
+plot(AUSdataFit$tmax,fitted(out)[,1])
+spT.validation(AUSdataFit$tmax,fitted(out)[,1])
+
+## spatial prediction
+set.seed(11)
+pred.sp <- predict(out,newcoords=~lon+lat,newdata=AUSdataPred)
+spT.validation(AUSdataPred$tmax,c(pred.sp$Mean))
+plot(AUSdataPred$tmax,c(pred.sp$Mean))
+
+## temporal prediction
+set.seed(11)
+pred.sp.f <- predict(out,type="temporal",foreStep=12,
+                     newcoords=~lon+lat, newdata=AUSdataFore)
+spT.validation(AUSdataFore$tmax,c(pred.sp.f$Mean))
+plot(AUSdataFore$tmax,c(pred.sp.f$Mean))
+
+## The Truncated/Censored temporal dynamic DLM models:
+library("spTDyn", warn.conflicts = FALSE)
+set.seed(11)
+out <- GibbsDyn(tmax ~ soi+tp(soi)+grid,model="truncated",
+           data=AUSdataFit, nItr=nItr, nBurn=nBurn, coords=~lon+lat,
+           spatial.decay=decay(distribution=Gamm(2,1),tuning=0.06),
+           truncation.para = list(at = 30,lambda = 2))
+print(out)
+summary(out)
+head(fitted(out))
+plot(out,density=FALSE)
+#
+head(cbind(AUSdataFit$tmax,fitted(out)[,1]))
+plot(AUSdataFit$tmax,fitted(out)[,1])
+spT.validation(AUSdataFit$tmax,fitted(out)[,1])
+
+## spatial prediction
+set.seed(11)
+pred.tp <- predict(out,newcoords=~lon+lat,newdata=AUSdataPred)
+spT.validation(AUSdataPred$tmax,c(pred.tp$Mean))
+plot(AUSdataPred$tmax,c(pred.tp$Mean))
+
+## temporal prediction
+set.seed(11)
+pred.tp.f <- predict(out,type="temporal",foreStep=12,
+                     newcoords=~lon+lat, newdata=AUSdataFore)
+spT.validation(AUSdataFore$tmax,c(pred.tp.f$Mean))
+plot(AUSdataFore$tmax,c(pred.tp.f$Mean))
+
 
 ##############################################################################
 

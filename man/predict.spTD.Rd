@@ -1,11 +1,11 @@
-\name{predict.spT}
-\alias{predict.spT}
+\name{predict.spTD}
+\alias{predict.spTD}
 \title{Spatial and temporal predictions for the spatio-temporal models.}
 \description{
 This function is used to obtain spatial predictions in the unknown locations and also to get the temporal forecasts using MCMC samples.
 }
 \usage{
-\method{predict}{spT}(object, newdata, newcoords, foreStep=NULL, type="spatial", 
+\method{predict}{spTD}(object, newdata, newcoords, foreStep=NULL, type="spatial", 
         nBurn, tol.dist, Summary=TRUE, ...)
 
 }
@@ -44,7 +44,69 @@ This function is used to obtain spatial predictions in the unknown locations and
 \code{\link{GibbsDyn}}.
 }
 \examples{
-\dontrun{
+\dontshow{
+##
+## Read Aus data ##
+data(AUSdata)
+# set a side data for validation
+library(spTimer)
+s<-c(1,4,10)
+AUSdataFit<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s, reverse=TRUE)
+AUSdataFit<-subset(AUSdataFit, with(AUSdataFit, !(year == 2009)))
+AUSdataPred<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s)
+AUSdataPred<-subset(AUSdataPred, with(AUSdataPred, !(year == 2009)))
+AUSdataFore<-spT.subset(data=AUSdata, var.name=c("s.index"), s=s)
+AUSdataFore<-subset(AUSdataFore, with(AUSdataFore, (year == 2009)))
+
+## Read NY data ##
+data(NYdata)
+# set a side data for validation
+s<-c(5,8,10,15,20,22,24,26)
+fday<-c(25:31)
+NYdataFit<-spT.subset(data=NYdata, var.name=c("s.index"), s=s, reverse=TRUE)
+NYdataFit<-subset(NYdataFit, with(NYdataFit, !(Day \%in\% fday & Month == 8)))
+NYdataPred<-spT.subset(data=NYdata, var.name=c("s.index"), s=s)
+NYdataPred<-subset(NYdataPred, with(NYdataPred, !(Day \%in\% fday & Month == 8)))
+NYdataFore<-spT.subset(data=NYdata, var.name=c("s.index"), s=s)
+NYdataFore<-subset(NYdataFore, with(NYdataFore, (Day \%in\% fday & Month == 8)))
+
+nItr<-100
+nBurn<-0
+
+# MCMC via Gibbs using defaults
+# Spatially varying coefficient process model
+
+set.seed(11)
+post.sp <- GibbsDyn(tmax ~ soi+sp(soi)+grid+sp(grid),
+           data=AUSdataFit, nItr=nItr, nBurn=nBurn, coords=~lon+lat,
+           spatial.decay=decay(distribution=Gamm(2,1),tuning=0.06))
+## spatial prediction
+set.seed(11)
+pred.sp <- predict(post.sp,newcoords=~lon+lat,newdata=AUSdataPred)
+## temporal prediction
+set.seed(11)
+pred.sp.f <- predict(post.sp,type="temporal",foreStep=12,
+                     newcoords=~lon+lat, newdata=AUSdataFore)
+
+# MCMC via Gibbs using defaults
+# spatio-temporal DLM
+
+set.seed(11)
+post.tp <- GibbsDyn(o8hrmax ~ tp(cMAXTMP)-1, data=NYdataFit,
+           nItr=nItr, nBurn=nBurn, coords=~Longitude+Latitude,
+           initials=initials(rhotp=0), scale.transform="SQRT",
+           spatial.decay=decay(distribution=Gamm(2,1),tuning=0.05))
+## spatial prediction
+set.seed(11)
+pred.tp <- predict(post.tp, newdata=NYdataPred, newcoords=~Longitude+Latitude)
+## temporal prediction
+set.seed(11)
+pred.tp.f <- predict(post.tp, newdata=NYdataFore, newcoords=~Longitude+Latitude,
+                     type="temporal", foreStep=7)
+##
+
+}
+\donttest{
 ##
 
 library(spTDyn)
