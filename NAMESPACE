@@ -1,6 +1,4 @@
 useDynLib(spTDyn, .registration = TRUE)
-#useDynLib(spTDyn)
-#exportPattern("^[^\\.]")
 
 import(spTimer)
 import(coda)
@@ -18,18 +16,12 @@ importFrom("stats", "acf", "as.formula", "contrasts", "density",
 importFrom("utils", "read.table")
 importFrom("stats", "rnorm")
 importFrom("stats", "rgamma")
-importFrom("spTimer", "as.forecast.object", 
+importFrom("spTimer",  
     "Formula.coords", "Formula.matrix", "formula.spT", "Gamm", "Norm", 
     "spT.decay", "spT.geo.dist", "spT.geo_dist", "spT.geodist",
     "spT.grid.coords", "spT.initials", "spT.pCOVER", "spT.priors",
     "spT.segment.plot", "spT.subset", "spT.time", "spT.validation",
     "Unif")
-
-#S3method(model.frame,spT)
-#S3method(model.matrix,spT)
-#S3method(as.mcmc,spT)
-#S3method(terms,spT)
-#S3method(formula,spT)
 
 S3method(print,spTpred)
 S3method(print,spTD)
@@ -41,8 +33,6 @@ S3method(summary,spTD)
 S3method(plot,spTD)
 S3method(predict,spTD)
 S3method(as.mcmc,spTD)
-
-exportClasses("spTD")
 
 export(
        "GibbsDyn",

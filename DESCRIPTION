@@ -1,8 +1,8 @@
 Package: spTDyn
 Type: Package
 Title: Spatially Varying and Spatio-Temporal Dynamic Linear Models
-Version: 2.0
-Date: 2017-10-31
+Version: 2.0.1
+Date: 2020-06-03
 Author: K. Shuvo Bakar, Philip Kokic, Huidong Jin
 Maintainer: Shuvo Bakar <shuvo.bakar@gmail.com>
 Depends: R (>= 3.4.1), spTimer
@@ -11,6 +11,6 @@ Imports: coda, sp, spacetime, grDevices, graphics, stats, utils
 License: GPL (>= 2)
 LazyData: yes
 NeedsCompilation: yes
-Packaged: 2017-10-24 02:30:37 UTC; bak18b
+Packaged: 2020-06-02 14:53:00 UTC; bak18b
 Repository: CRAN
-Date/Publication: 2017-10-24 07:25:12 UTC
+Date/Publication: 2020-06-02 15:10:03 UTC

@@ -81,77 +81,6 @@ residuals.spTD<-function(object, ...){
    #}
 }
 ##
-## use of formula
-##
-formula.spT<-function(x, ...){
-  x$call
-}
-##
-## use of terms
-##
-terms.spT<-function(x, ...){
-  terms(x$call)
-}
-##
-## MCMC plots for individual values (trace, density, acf)
-##
-MCMC.plot.obj<-function(post_val, nItr, nBurn=0, 
-                name=c('....'), ACF="FALSE", PARTIAL.acf="FALSE") 
-  {
-      nBurn=nBurn+1; x<-post_val;
-      #if(missing(initial_val)){ 
-      #   y<-0
-      #}
-      #else{
-      #   y<-initial_val
-      #} 
-      if(missing(nItr)){ 
-         nItr<-length(post_val)
-      }
-      if(ACF==FALSE & PARTIAL.acf==FALSE){
-        #windows()
-        #dev.new()
-        par(mfrow=c(1,2))
-        #plot(nBurn:nItr, x[nBurn:nItr], xlab = "Iterations", 
-        #   ylab = paste("Values of  (", name, ")", sep=''), type = "l",
-        #   ylim=c(min(y,x[nBurn:nItr]),max(y,x[nBurn:nItr])),main='Trace plot')
-        #abline(h = y, lty = 2,col="blue")
-        #plot(density(x[nBurn:nItr]),main='Density plot',xlim=c(min(y,x[nBurn:nItr]),max(y,x[nBurn:nItr])))
-        #abline(v = y, lty = 2,col="blue")
-        plot(nBurn:nItr, x[nBurn:nItr], xlab = "Iterations", 
-           ylab = paste("Values of  (", name, ")", sep=''), type = "l",
-           ylim=c(min(x[nBurn:nItr]),max(x[nBurn:nItr])),main='Trace plot')
-        plot(density(x[nBurn:nItr]),main='Density plot',xlim=c(min(x[nBurn:nItr]),max(x[nBurn:nItr])))
-     }	
-     else if(ACF==TRUE & PARTIAL.acf==TRUE){
-      #windows()
-      #dev.new() 
-      par(mfrow=c(1,4))
-      plot(nBurn:nItr, x[nBurn:nItr], xlab = "Iterations", 
-        ylab = paste("Values of  (", name, ")", sep=''), type = "l", 
-        ylim=c(min(x[nBurn:nItr]), max(x[nBurn:nItr])),main='Trace plot')
-      #abline(h = y, lty = 2,col="blue")
-      plot(density(x[nBurn:nItr]),main='Density plot',xlim=c(min(x[nBurn:nItr]), max(x[nBurn:nItr])))
-      #abline(v = y, lty = 2,col="blue")
-      acf(x[nBurn:nItr],main='ACF plot',col="red")
-      pacf(x[nBurn:nItr],main='Partial ACF plot',col="red")
-     }
-     else if(ACF=="TRUE" & PARTIAL.acf=="FALSE"){
-      #dev.new() 
-      par(mfrow=c(1,3))
-      plot(nBurn:nItr, x[nBurn:nItr], xlab = "Iterations", 
-        ylab = paste("Values of  (", name, ")", sep=''), type = "l", 
-        ylim=c(min(x[nBurn:nItr]), max(x[nBurn:nItr])),main='Trace plot')
-      #abline(h = y, lty = 2, col="blue")
-      plot(density(x[nBurn:nItr]),main='Density plot',xlim=c(min(x[nBurn:nItr]), max(x[nBurn:nItr])))
-      #abline(v = y, lty = 2, col="blue")
-      acf(x[nBurn:nItr],main='ACF plot',col="red")
-     }
-     else {
-
-     }
-  }
-##
 ## To use in coda package
 ##
 as.mcmc.spTD<-function(x, ...){
@@ -489,53 +418,6 @@ spT.hit.false<-function(obs,fore,tol){
    x
 }
 ##
-## grid coordinates
-##
- spT.grid.coords<-function(Longitude=c(max,min),Latitude=c(max,min),by=c(NA,NA))
-{
-      max.lon <- Longitude[1]
-      min.lon <- Longitude[2]
-      max.lat <- Latitude[1]
-      min.lat <- Latitude[2]
-      if(is.na(by[1]) || is.na(by[2])){
-        stop('Error: need to specify grid dimension, n x m')
-      }
-      knots.lon <- seq(max.lon,min.lon,length=by[1])
-      knots.lat <- seq(max.lat,min.lat,length=by[2])
-      #knots.coords <- cbind(rep(knots.lon,by),c(outer(rep(1,by),knots.lat)))
-      knots.coords <- cbind(c(outer(rep(1,by[2]),knots.lon)),rep(knots.lat,by[1]))
-      as.matrix(knots.coords)
-}
-##
-## Percentage Coverage
-##
- spT.pCOVER<-function(z=NULL,zup=NULL,zlow=NULL,zsample=NULL,level=95)
-{
-    if(is.null(z)){
-      stop('\n # Provide observed values\n')
-    }
-    if(!is.null(zsample)){
-      z<-c(z)
-      low<-(1-level/100)/2
-      up<-1-low
-      x<-apply(zsample,1,quantile,prob=c(low,up))
-      x<-rbind(x,z)
-      x<-t(x)
-      x<-na.exclude(x)
-      y<-x[x[, 1] <= x[, 3] & x[, 3] <= x[, 2], ]
-      round(length(y[,1])/length(x[,1])*100,2)
-    }
-    else if(is.null(zsample)){
-      z<-as.matrix(z)
-      zlow<-as.matrix(zlow)
-      zup<-as.matrix(zup)
-      x<-cbind(zlow,z,zup)
-      x<-na.exclude(x)
-      y<- x[x[,1] <= x[,2] & x[,2] <= x[,3],]
-      round(length(y[,1])/length(x[,1])*100,2)
-    }
-}
-##
 ## To keep the long lat positions based on tol.dist
 ##
  spT.keep.morethan.dist <- function(coords, tol.dist=100)  
@@ -566,106 +448,6 @@ spT.hit.false<-function(obs,fore,tol){
    z <- unique(w[,1])
    a <- coords[-z,  ]
    a
-}
-##
-## This function extracts the data using formula
-##
- Formula.matrix <- function(formula, data, na.rm=FALSE)
-{
-      if(na.rm == FALSE){
-           mt <- terms.formula(formula, data=data, specials=c("sp","tp"))
-           if(missing(data)) data <- sys.frame(sys.parent())
-           spcheck<-attr(mt, "specials")$sp
-           tpcheck<-attr(mt, "specials")$tp
-           mf <- model.frame(mt, data=data, na.action=na.pass)
-      }
-      else{
-           mt <- terms.formula(formula, data=data, specials=c("sp","tp"))
-           if(missing(data)) data <- sys.frame(sys.parent())
-           spcheck<-attr(mt, "specials")$sp
-           tpcheck<-attr(mt, "specials")$tp
-           mf <- model.frame(mt, data=data)
-      }
-      # null model support
-           "%w/o%" <- function(x, y) x[!x %in% y]
-           x.names <- attr(mt, "term.labels") # X variable names
-           X <- if (!is.empty.model(mt)) model.matrix(mt, mf, contrasts)
-           if((!is.null(spcheck)) & (is.null(tpcheck))){
-           # only spatially varying  
-                x.names.sp <- x.names[attr(mt, "specials")$sp-1]
-                X.sp <- X[,c(x.names.sp)]
-                x.names <- dimnames(X)[[2]]
-                x.names <- x.names %w/o% x.names.sp
-                X <- X[,c(x.names)]
-                X <- as.matrix(X)
-                dimnames(X)[[2]]<-as.list(x.names) 
-                X.sp <- as.matrix(X.sp) 
-                dimnames(X.sp)[[2]]<-as.list(x.names.sp) 
-                X.tp <- NULL; x.names.tp<-NULL
-                if(dim(X)[[2]]==0){
-                  X<-as.matrix(rep(0, dim(mf)[[1]])); 
-                  x.names <- "(Intercept)"
-                }  
-           }
-           else if((!is.null(tpcheck)) & (is.null(spcheck))) {
-           # only temporally varying
-                x.names.tp <- x.names[attr(mt, "specials")$tp-1]
-                X.tp <- X[,c(x.names.tp)]
-                x.names <- dimnames(X)[[2]]
-                x.names <- x.names %w/o% x.names.tp
-                X <- X[,c(x.names)]
-                X <- as.matrix(X)
-                dimnames(X)[[2]]<-as.list(x.names) 
-                X.tp <- as.matrix(X.tp) 
-                dimnames(X.tp)[[2]]<-as.list(x.names.tp) 
-                X.sp <- NULL; x.names.sp<-NULL 
-                if(dim(X)[[2]]==0){
-                  X<-as.matrix(rep(0, dim(mf)[[1]])); 
-                  x.names <- "(Intercept)"
-                }  
-           }
-           else if((!is.null(spcheck)) & (!is.null(tpcheck))){
-           # both spatially and temporally varying
-                x.names.sp <- x.names[attr(mt, "specials")$sp-1]
-                x.names.tp <- x.names[attr(mt, "specials")$tp-1]
-                X.sp <- X[,c(x.names.sp)]
-                X.tp <- X[,c(x.names.tp)]
-                x.names <- dimnames(X)[[2]]
-                x.names <- x.names %w/o% x.names.sp
-                x.names <- x.names %w/o% x.names.tp
-                X <- X[,c(x.names)]
-                X <- as.matrix(X)
-                dimnames(X)[[2]]<-as.list(x.names) 
-                X.sp <- as.matrix(X.sp) 
-                dimnames(X.sp)[[2]]<-as.list(x.names.sp) 
-                X.tp <- as.matrix(X.tp) 
-                dimnames(X.tp)[[2]]<-as.list(x.names.tp) 
-                if(dim(X)[[2]]==0){
-                  X<-as.matrix(rep(0, dim(mf)[[1]])); 
-                  x.names <- "(Intercept)"
-                }  
-          }
-           else {
-                x.names <- dimnames(X)[[2]] 
-                X.sp <- NULL; x.names.sp<-NULL; X.tp <- NULL; x.names.tp<-NULL 
-           }
-           Y <- as.matrix(model.response(mf, "numeric")) # Y matrix
-       #
-       return(list(Y=Y, X=X, x.names=x.names, X.sp=X.sp, x.names.sp=x.names.sp, X.tp=X.tp, x.names.tp=x.names.tp))
-}
-##
-## This function extracts the coords using formula
-##
- Formula.coords <- function(formula, data, na.rm=TRUE)
-{
-     mt <- terms(formula, data=data)
-     if(missing(data)) data <- sys.frame(sys.parent())
-     mf <- model.frame(mt, data=data)
-	 # null model support
-     X <- if (!is.empty.model(mt)) model.matrix(mt, mf, contrasts)
-     X <- as.matrix(X[,2:3])         # X matrix
-	 X <- unique(X); dimnames(X)<-NULL
-     X
 }
 ##
 ## Predictive Model Choice Criteria
@@ -918,18 +700,6 @@ spT.check.sites.inside<-function(coords, method, tol=0.1){
      #
      tt
 }
-##
-## use of formula
-##
-#formula.spT<-function(x, ...){
-#  x$call
-#}
-##
-## use of terms
-##
-#terms.spT<-function(x, ...){
-#  terms(x$call)
-#}
 ##
 ## For spatially varying beta
 ##

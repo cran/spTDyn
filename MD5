@@ -1,13 +1,13 @@
-97cc27080f852b984aadb002dc70df4c *DESCRIPTION
-34227cf735df8c1aff21180b72caec43 *NAMESPACE
+a3c59065ac038c06f08431a43fac9d7f *DESCRIPTION
+1b9012478eea3108da61f1d658db9226 *NAMESPACE
 910a3cb2c738e952e3aef3c4a08024bc *R/spGP.r
 97b0d67cf8fc82fb2d3b75fa1f8ad07f *R/spTDyn.R
 83186f9ba8a575e642337873cdf5f22d *R/spTfnc.R
-07f58651fb29f4dff8d1e2869c77d6e7 *R/useful_commands.R
+01fc9d1bf7d0677b41fddf059e7c5420 *R/useful_commands.R
 4e0ef6515eb0c58262f89932e6a6ff8f *data/AUSdata.txt.gz
 e67b591c9181041b7bff6c365a6377a3 *data/NYdata.txt.gz
-828171327a538431ca1f5e3e1838af7b *inst/CITATION
-ee06c4fea0124654957f12657cc4afee *inst/ChangeLog
+005dd44f96ed59d7da9a54fb02c38466 *inst/CITATION
+eab09f64861b33a032b27d327298905f *inst/ChangeLog
 46eb3396142c118885fddfe3e264dc81 *man/GibbsDyn.Rd
 e0e0da14e803451a9a911ebf1c429630 *man/ObsGridLoc.Rd
 4086a343995bdc3bfc2b5a403ab7dd37 *man/decay.Rd
@@ -31,7 +31,7 @@ ed121aa652d684231c66e738b7154396 *src/forecast_xb_gp.c
 2e68b2b37e9115003b5c17ed202249a8 *src/gibbs_gp.c
 e02dd75c81e88de9d1c64c95890a4b5d *src/header.h
 9151c3d2a0da175c8bddd39f670e1d1e *src/main_gp.h
-4278b7adfbd7dbefee76332492d816a4 *src/mathematics.c
+77d61d23566fa9d89d50b1e62a1810d5 *src/mathematics.c
 1ee05c7c9e7224a191c7401eef3675ad *src/mathematics.h
 3d7224b39200dc691add0d7c69ad24e4 *src/prediction_xb_gp.c
 71e2954bdf54e1a70700a9eb42116f3f *src/randgenerator.c

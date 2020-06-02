@@ -1,4 +1,11 @@
-2017-10-15
+2020-06-03
+
+	* Version 2.0.1
+	* Fixed issues related to NAMESPACE asked by CRAN team.
+	* Dropped "as.forecast.object" and exportClasses("spTD") from NAMESPACE.
+	* Fixed a minor bug in *.C code.
+
+2017-10-25
 
 	* Version 2.0
 	* Added truncated/censored (only left-sided) Gaussian approach for spatially varying and temporal dynamic models with spatial and temporal predictions.
