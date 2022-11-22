@@ -51,7 +51,7 @@ library(spTDyn)
 data(NYdata); 
 
 # Define the coordinates
-coords<-as.matrix(unique(cbind(DataFit[,2:3])))
+coords<-as.matrix(unique(cbind(NYdata[,2:3])))
 
 # MCMC via Gibbs using default choices
 set.seed(11)

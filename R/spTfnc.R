@@ -154,7 +154,7 @@ decay<-function(distribution=Gamm(a=2,b=1), tuning=NULL, npoints=NULL, value=NUL
 {
    #
    out<-NULL
-   if(class(distribution) == "character"){
+   if(inherits(distribution, "character")){
     if(distribution != "FIXED"){
      stop("\n# Error: define distribution correctly \n")
     }
@@ -162,7 +162,7 @@ decay<-function(distribution=Gamm(a=2,b=1), tuning=NULL, npoints=NULL, value=NUL
     out$value<-value
     out
    }
-   else if(class(distribution) == "Uniform"){
+   else if(inherits(distribution, "Uniform")){
 	limit<-c(distribution)
     if(is.null(npoints)){
      #stop("\n# Error: correctly define discrete segments \n")
@@ -174,7 +174,7 @@ decay<-function(distribution=Gamm(a=2,b=1), tuning=NULL, npoints=NULL, value=NUL
     out$segments<-npoints
     out
    }
-   else if(class(distribution) == "Gamma"){
+   else if(inherits(distribution, "Gamma")){
     if(is.null(tuning)){
      stop("\n# Error: correctly define tuning parameter \n")
     }
@@ -200,14 +200,17 @@ GibbsDyn<-function(formula, data=parent.frame(),
 		 truncation.para=list(at=0,lambda=2))
 {
    ## check for spacetime class
-   if(class(data) %in% c("STFDF","STSDF","STIDF","SpatialPointsDataFrame")){
+   if(inherits(data, c("STFDF","STSDF","STIDF","SpatialPointsDataFrame"))){
     dat <- as.data.frame(data)
 	coords <- as.matrix(unique(dat[,1:2]))
 	rm(dat)
 	dimnames(coords) <- NULL
    }
-   if(class(data) %in% c("ST","STTDF")){
+   else if(inherits(data, c("ST","STTDF"))){
     stop("\n Error: does not support ST, STTDF and sp classes. \n")
+   }
+   else{
+     #stop("\n Error: define data class properly. \n")
    }
    ## check coords: built-in the data
     if(missing(coords)){
@@ -231,7 +234,7 @@ GibbsDyn<-function(formula, data=parent.frame(),
 			coords <- as.matrix(coords)
 			dimnames(coords)<-NULL
         }
-		else if(class(coords)=="formula") {
+		else if(inherits(coords, "formula")) {
             if(missing(data)){
 			  stop("\n Error: should provide data to use a formula in coords.")
 			}
@@ -268,14 +271,17 @@ spTDyn.Gibbs<-function(formula, data=parent.frame(), model="GP",
          annual.aggrn="NONE")
 {
    ## check for spacetime class
-   if(class(data) %in% c("STFDF","STSDF","STIDF","SpatialPointsDataFrame")){
+   if(inherits(data, c("STFDF","STSDF","STIDF","SpatialPointsDataFrame"))){
     dat <- as.data.frame(data)
 	coords <- as.matrix(unique(dat[,1:2]))
 	rm(dat)
 	dimnames(coords) <- NULL
    }
-   if(class(data) %in% c("ST","STTDF")){
+   else if(inherits(data, c("ST","STTDF"))){
     stop("\n Error: does not support ST, STTDF and sp classes. \n")
+   }
+   else{
+     #stop("\n Error: define data class properly. \n")
    }
    ## check coords: built-in the data
     if(missing(coords)){
@@ -299,7 +305,7 @@ spTDyn.Gibbs<-function(formula, data=parent.frame(), model="GP",
 			coords <- as.matrix(coords)
 			dimnames(coords)<-NULL
         }
-		else if(class(coords)=="formula") {
+		else if(inherits(coords, "formula")) {
             if(missing(data)){
 			  stop("\n Error: should provide data to use a formula in coords.")
 			}
@@ -317,7 +323,7 @@ spTDyn.Gibbs<-function(formula, data=parent.frame(), model="GP",
    if (missing(formula)) {
         stop("\n# Error: formula must be specified \n")
    }
-   if (class(formula) != "formula") {
+   if (!inherits(formula, "formula")) {
         stop("\n# Error: equation must be in formula-class \n ...")
    }
    #
@@ -349,10 +355,10 @@ spTDyn.Gibbs<-function(formula, data=parent.frame(), model="GP",
    #
    if(model=="GP"){
       cat("\n Output: GP models \n")
-      if(class(priors) != "spGP" & class(priors) != "NULL"){
+      if(!inherits(priors, "spGP") & !inherits(priors, "NULL")){
         stop("\n# Error: correctly define the GP models for function priors.")
       }
-      if(class(initials) != "spGP" & class(initials) != "NULL"){
+      if(!inherits(initials, "spGP") & !inherits(initials, "NULL")){
         stop("\n# Error: correctly define the GP models for function initials.")
       }
       out<- spGP.Gibbs(formula=formula, data=data, time.data=time.data, coords=coords, 
@@ -369,10 +375,10 @@ spTDyn.Gibbs<-function(formula, data=parent.frame(), model="GP",
    #
    else if (model=="truncated"){
       cat("\n Output: Truncated model \n")
-      if(class(priors) != "spGP" & class(priors) != "NULL"){
+      if(!inherits(priors, "spGP") & !inherits(priors, "NULL")){
         stop("\n# Error: correctly define the models for priors.")
       }
-      if(class(initials) != "spGP" & class(initials) != "NULL"){
+      if(!inherits(initials, "spGP") & !inherits(initials, "NULL")){
         stop("\n# Error: correctly define the models for function initials.")
       }
 	  if(!is.list(truncation.para)){
@@ -467,12 +473,15 @@ predict.spTD<-function(object, newdata=NULL, newcoords, foreStep=NULL, type="spa
           tol.dist=2, Summary=TRUE, ...)
 {
    ## check for spacetime class
-   if(class(newdata) %in% c("STFDF","STSDF","STIDF","SpatialPointsDataFrame")){
+   if(inherits(newdata, c("STFDF","STSDF","STIDF","SpatialPointsDataFrame"))){
 	newcoords <- as.matrix(unique((as.data.frame(newdata[,0]))))
 	dimnames(newcoords) <- NULL
    }
-   if(class(newdata) %in% c("ST","STTDF")){
+   else if(inherits(newdata, c("ST","STTDF"))){
     stop("\n Error: does not support ST, STTDF and sp classes. \n")
+   }
+   else{
+    #stop("\n Error: define data class properly \n")
    }
     ## check newcoords: built-in the data
     if(missing(newcoords)){
@@ -496,7 +505,7 @@ predict.spTD<-function(object, newdata=NULL, newcoords, foreStep=NULL, type="spa
 			newcoords <- as.matrix(newcoords)
 			dimnames(newcoords)<-NULL
         }
-		else if(class(newcoords)=="formula") {
+		else if(inherits(newcoords, "formula")) {
             if(is.null(newdata)){
 			  stop("\n Error: should provide data to use a formula in newcoords.")
 			}

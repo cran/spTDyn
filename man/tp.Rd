@@ -47,15 +47,15 @@ library(spTDyn)
 ##
 
 # Read data 
-data(DataFit); 
+data(NYdata); 
 
 # Define the coordinates
-coords<-as.matrix(unique(cbind(DataFit[,2:3])))
+coords<-as.matrix(unique(cbind(NYdata[,2:3])))
 
 # MCMC via Gibbs using default choices
 set.seed(11)
 post.gp <- GibbsDyn(formula=o8hrmax ~cMAXTMP+WDSP+tp(RH),   
-         data=DataFit, coords=coords, scale.transform="SQRT")
+         data=NYdata, coords=coords, scale.transform="SQRT")
 print(post.gp)
 
 ##

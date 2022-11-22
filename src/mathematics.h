@@ -7,8 +7,8 @@
 /****************************** From "math.c" file ***************************/
 /*****************************************************************************/
 
-double w126_from_daily(); 
-double max_pos(); 
+double w126_from_daily(double *day); 
+double max_pos(double *x, int n); 
 
 void annual_aggregate(int *aggtype, int *n, int *r, int *T, double *z, 
      double *out);

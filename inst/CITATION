@@ -13,13 +13,11 @@ citEntry(entry = "Article",
   volume       = "64",
   number       = "5",
   pages        = "755-778",
-  url          = "https://doi.org/10.1111/rssc.12103",
 
   textVersion  =
   paste("Bakar, K.S., Kokic, P. and Jin, H. (2015).",
         "A spatio-dynamic model for assessing frost risk in south-eastern Australia",
-        "Journal of the Royal Statistical Society, Series C",
-        "DOI: 10.1111/rssc.12103 .")
+        "Journal of the Royal Statistical Society, Series C")
 )
 
 citEntry(entry = "Article",
@@ -38,7 +36,7 @@ citEntry(entry = "Article",
   paste("Bakar, K.S., Kokic, P. and Jin, H. (2015).",
         "Hierarchical spatially varying coefficient and temporal dynamic process models using spTDyn",
         "Journal of Statistical Computation and Simulation",
-        "URL:  .")
+        "URL: https://doi.org/10.1080/00949655.2015.1038267 .")
 )
 
 citEntry(entry="Manual",

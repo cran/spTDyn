@@ -1,3 +1,8 @@
+2022-11-22
+
+	* Version 2.0.2
+	* Fixed issues related to Wstrict-prototypes in C asked by CRAN team.
+	
 2020-06-03
 
 	* Version 2.0.1
