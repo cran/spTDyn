@@ -598,7 +598,7 @@ double sp_gamma(double z)
   if ( c == NULL ) {
     double k1_factrl = 1.0; // (k - 1)!*(-1)^k with 0!==1
     c = c_space;
-    c[0] = sqrt(2.0*PI);
+    c[0] = sqrt(2.0*3.141593);
     for(k=1; k < a; k++) {
       c[k] = exp(a-k) * pow(a-k, k-0.5) / k1_factrl;
 	  k1_factrl *= -k;
@@ -638,8 +638,8 @@ void GeoDist_miles(int *n, double *Lat, double *Long, double *out)
         LatI = Lat[i];  LatJ = Lat[j];
         LongI = Long[i];  LongJ = Long[j];
         absol(&LongI, &LongJ, &tmp1);
-        u =  sin(LatI*PI/180)*sin(LatJ*PI/180) + 
-        cos(LatI*PI/180)*cos(LatJ*PI/180)*cos(tmp1*PI/180);
+        u =  sin(LatI*3.141593/180)*sin(LatJ*3.141593/180) + 
+        cos(LatI*3.141593/180)*cos(LatJ*3.141593/180)*cos(tmp1*3.141593/180);
         if(u > 1.0){
         tmp = 0.0;
         }
@@ -647,7 +647,7 @@ void GeoDist_miles(int *n, double *Lat, double *Long, double *out)
         tmp = 0.0;
         }
         else{     
-        tmp = acos(u)*180/PI*69.17334;
+        tmp = acos(u)*180/3.141593*69.17334;
         }
      // we put constant 111.32387 to obtain distance in km
      // we put constant 69.17334 to obtain distance in miles
@@ -680,8 +680,8 @@ void GeoDist_km(int *n, double *Lat, double *Long, double *out)
         LatI = Lat[i];  LatJ = Lat[j];
         LongI = Long[i];  LongJ = Long[j];
         absol(&LongI, &LongJ, &tmp1);
-        u =  sin(LatI*PI/180)*sin(LatJ*PI/180) + 
-        cos(LatI*PI/180)*cos(LatJ*PI/180)*cos(tmp1*PI/180);
+        u =  sin(LatI*3.141593/180)*sin(LatJ*3.141593/180) + 
+        cos(LatI*3.141593/180)*cos(LatJ*3.141593/180)*cos(tmp1*3.141593/180);
         if(u > 1.0){
         tmp = 0.0;
         }
@@ -689,7 +689,7 @@ void GeoDist_km(int *n, double *Lat, double *Long, double *out)
         tmp = 0.0;
         }
         else{     
-        tmp = acos(u)*180/PI*111.32387;
+        tmp = acos(u)*180/3.141593*111.32387;
         }
      // we put constant 111.32387 to obtain distance in km
      // we put constant 69.17334 to obtain distance in miles
@@ -708,8 +708,8 @@ double geodeticdistance(double *point1, double *point2)
   int i;
   
   for (i=0; i<2; i++) {
-    p1rad[i] = point1[i] * M_PI/180.0;
-    p2rad[i] = point2[i] * M_PI/180.0;
+    p1rad[i] = point1[i] * 3.141593/180.0;
+    p2rad[i] = point2[i] * 3.141593/180.0;
     u += sqr(point1[i] - point2[i]); 
   }
 

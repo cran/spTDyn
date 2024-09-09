@@ -1,3 +1,9 @@
+2024-09-09
+
+	* Version 2.0.3
+	* Fixed issues related to spTDyn-package.Rd: predict.spT asked by CRAN team.
+	* Also updated the CRAN new layout format in "Authors@R - DESCRIPTION" and "bibentry() - CITATION".
+	
 2022-11-22
 
 	* Version 2.0.2

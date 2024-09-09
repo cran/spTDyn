@@ -11,7 +11,7 @@ This function is used to obtain spatial predictions in the unknown locations and
 }
 
 \arguments{
-\item{object}{Object of class inheriting from "spT".}
+\item{object}{Object of class inheriting from "spTD".}
 \item{newdata}{The data set providing the covariate values for spatial prediction or temporal forecasts. This data should have the same space-time structure as the original data frame.}
 \item{newcoords}{The coordinates for the prediction or forecast sites. The locations are in similar format to \code{coords}, see \code{\link{spT.Gibbs}}.}
 \item{foreStep}{Number of K-step (time points) ahead forecast, K=1,2, ...; Only applicable if type="temporal".}

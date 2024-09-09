@@ -18,7 +18,7 @@ Type: \tab Package\cr
 The back-end code of this package is built under c language.\cr
 Main functions used: \cr
 \code{> \link{GibbsDyn}} \cr
-\code{> \link{predict.spT}} \cr
+\code{> \link{predict.spTD}} \cr
 }
 \author{
 K.S. Bakar \cr
